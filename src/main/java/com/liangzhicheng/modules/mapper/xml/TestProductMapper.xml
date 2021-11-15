@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liangzhicheng.modules.mapper.ITestProductMapper">
+
+    <resultMap id="elasticProductListMap" type="com.liangzhicheng.modules.document.ElasticProduct" autoMapping="true">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <collection property="attrValueList" columnPrefix="attr_" ofType="com.liangzhicheng.modules.document.ElasticProductAttributeValue">
+            <id column="id" property="id" jdbcType="BIGINT"/>
+            <result column="product_attribute_id" property="productAttributeId" jdbcType="BIGINT"/>
+            <result column="value" property="value" jdbcType="VARCHAR"/>
+            <result column="type" property="type" jdbcType="INTEGER"/>
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <select id="listProduct" resultMap="elasticProductListMap">
+        SELECT
+               p.id AS id,
+               p.product_sn AS productSn,
+               p.brand_id AS brandId,
+               p.brand_name AS brandName,
+               p.product_category_id AS productCategoryId,
+               p.product_category_name AS productCategoryName,
+               p.pic AS pic,
+               p.name AS name,
+               p.sub_title AS subTitle,
+               p.price AS price,
+               p.sale AS sale,
+               p.new_status AS newStatus,
+               p.recommand_status AS recommandStatus,
+               p.stock AS stock,
+               p.promotion_type AS promotionType,
+               p.keywords AS keywords,
+               p.sort AS sort,
+               pav.id AS attr_id,
+               pav.value AS attr_value,
+               pav.product_attribute_id AS attr_product_attribute_id,
+               pa.type AS attr_type,
+               pa.name AS attr_name
+        FROM test_product p
+        LEFT JOIN test_product_attribute_value pav ON p.id = pav.product_id
+        LEFT JOIN test_product_attribute pa ON pav.product_attribute_id= pa.id
+        WHERE p.delete_status = 0
+        AND p.publish_status = 1
+        <if test = "id != null and id != ''">
+          AND p.id = #{id}
+        </if>
+    </select>
+
+</mapper>
